@@ -1,0 +1,25 @@
+name: Depo Dizinine Deployment
+on:
+  push:
+    branches: [ "main" ] # Sadece 'main' dalına bir şey gönderince çalışır
+
+jobs:
+  deploy-islemi:
+    runs-on: self-hosted # Senin kurduğun 'david' isimli işçiyi çağırır
+    steps:
+      - name: Kodu GitHub'dan Cek
+        uses: actions/checkout@v4
+        with:
+          path: kaneros-temp # Dosyaları geçici bir klasöre indirir
+
+      - name: Klasoru Hazırla ve Dosyaları Tası
+        run: |
+          # 1. Sunucuda hedef klasör yoksa oluşturur
+          mkdir -p /home/david/depo/www/kaneros/
+          
+          # 2. İndirilen kodları senin istediğin 'depo' dizinine kopyalar
+          cp -r ./kaneros-temp/* /home/david/depo/www/kaneros/
+          
+          # 3. O klasöre girer ve Docker'ı günceller
+          cd /home/david/depo/www/kaneros/
+          docker compose up -d --force-recreate
